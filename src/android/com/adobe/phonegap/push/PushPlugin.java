@@ -20,6 +20,10 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import com.google.android.gms.tasks.Tasks;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.ExecutionException;
+import java.lang.InterruptedException;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -201,11 +205,15 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
             Log.v(LOG_TAG, "execute: senderID=" + senderID);
 
             try {
-              token = Tasks.await(FirebaseInstanceId.getInstance().getInstanceId()).getToken();
+              token = Tasks.await(FirebaseInstanceId.getInstance().getInstanceId(), 60L, TimeUnit.SECONDS).getToken();
             } catch (IllegalStateException e) {
               Log.e(LOG_TAG, "Exception raised while getting Firebase token " + e.getMessage());
-            } catch(Exception e) {
-              Log.e(LOG_TAG, "Exception raised while executing task - getting Firebase token " + e.getMessage(), e);
+            } catch(ExecutionException e) {
+              Log.e(LOG_TAG, "Failed to get Firebase token - " + e.getMessage(), e);
+            } catch(InterruptedException e) {
+              Log.e(LOG_TAG, "Getting Firebase token was interrupted - " + e.getMessage(), e);
+            } catch(TimeoutException e) {
+              Log.e(LOG_TAG, "Getting Firebase token timeout - " + e.getMessage(), e);
             }
 
             if (token == null) {
