@@ -67,6 +67,12 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
       messageList.add(message);
     }
   }
+  
+  @Override
+  public void onNewToken(String s) {
+    super.onNewToken(s);
+    Log.e("NEW_TOKEN",s);
+  }
 
   @Override
   public void onMessageReceived(RemoteMessage message) {
