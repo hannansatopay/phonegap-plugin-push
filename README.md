@@ -2,6 +2,13 @@
 
 > Register and receive push notifications
 
+## Installation
+
+The plugin conforms to the Cordova plugin specification, it can be installed
+using the Cordova / Phonegap command line interface.
+
+    cordova plugin add https://github.com/8bhsolutions/phonegap-plugin-push.git
+    
 # Warning
 
 The links below take you to the version 2.x documentation which includes a
