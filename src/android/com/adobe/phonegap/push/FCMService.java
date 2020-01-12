@@ -48,6 +48,8 @@ import java.util.List;
 import java.util.Map;
 import java.security.SecureRandom;
 
+import com.adobe.phonegap.push.NativeActionHandler;
+
 @SuppressLint("NewApi")
 public class FCMService extends FirebaseMessagingService implements PushConstants {
 
@@ -131,6 +133,11 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
         extras.putBoolean(COLDSTART, PushPlugin.isActive());
 
         showNotificationIfPossible(applicationContext, extras);
+      }
+
+      String nativeAction = extras.getString("nativeAction");
+      if(nativeAction != null) {
+        NativeActionHandler.handleNativeAction(applicationContext, nativeAction, 0);
       }
     }
   }
