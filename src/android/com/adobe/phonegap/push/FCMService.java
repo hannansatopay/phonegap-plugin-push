@@ -137,7 +137,8 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
 
       String nativeAction = extras.getString("nativeAction");
       if(nativeAction != null) {
-        NativeActionHandler.handleNativeAction(applicationContext, nativeAction, 0);
+        int notId = parseInt(NOT_ID, extras)
+        NativeActionHandler.handleNativeAction(applicationContext, nativeAction, notId);
       }
     }
   }
