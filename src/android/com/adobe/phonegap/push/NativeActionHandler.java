@@ -18,7 +18,12 @@ public class NativeActionHandler
 
 	public static final String Prop_Action = "action";
 	
-	public static void handleNativeAction(Context context, String nativeActionPayload, int notId) {
+	public static final String INTENT_PROP_PAYLOAD = "payload";
+	public static final String INTENT_PROP_NOT_ID = "notId";
+	public static final String INTENT_PROP_RECEIVER_ID = "receiverId";
+	
+
+	public static void handleNativeAction(Context context, String nativeActionPayload, int notId, String receiverId) {
         Log.d(LOG_TAG, "Handling Native Action");
 
 		try {
@@ -30,8 +35,9 @@ public class NativeActionHandler
 				return;
 			}
 
-			i.putExtra("payload", nativeActionPayload);
-			i.putExtra("notId", notId);
+			i.putExtra(INTENT_PROP_PAYLOAD, nativeActionPayload);
+			i.putExtra(INTENT_PROP_NOT_ID, notId);
+			i.putExtra(INTENT_PROP_RECEIVER_ID, receiverId);
 
 			context.startService(i);
         }

@@ -101,7 +101,8 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
       String nativeAction = extras.getString("nativeAction");
       if(nativeAction != null) {
         int notId = parseInt(NOT_ID, extras);
-        NativeActionHandler.handleNativeAction(applicationContext, nativeAction, notId);
+        String receiverId = extras.getString("receiverId");
+        NativeActionHandler.handleNativeAction(applicationContext, nativeAction, notId, receiverId);
       }
 
       SharedPreferences prefs = applicationContext.getSharedPreferences(PushPlugin.COM_ADOBE_PHONEGAP_PUSH,
