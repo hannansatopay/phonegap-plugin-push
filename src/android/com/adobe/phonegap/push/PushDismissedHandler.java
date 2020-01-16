@@ -21,5 +21,18 @@ public class PushDismissedHandler extends BroadcastReceiver implements PushConst
 
             fcm.setNotification(notID, "");
         }
+
+        this.broadcastEvent(context.getApplicationContext(), notID);
+    }
+
+    /**
+     * Enable rest of the app to register to push dismiss event
+     */
+    private void broadcastEvent(Context appContext, int notID) {
+        Intent i = new Intent();
+        String packageName = appContext.getPackageName();
+        i.setAction(packageName + PUSH_DISMISSED);
+        i.putExtra(NOT_ID, notID);
+        appContext.sendBroadcast(i);
     }
 }
