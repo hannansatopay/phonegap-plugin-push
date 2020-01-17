@@ -30,9 +30,17 @@ public class PushDismissedHandler extends BroadcastReceiver implements PushConst
      */
     private void broadcastEvent(Context appContext, int notID) {
         Intent i = new Intent();
-        String packageName = appContext.getPackageName();
-        i.setAction(packageName + PUSH_DISMISSED);
+        i.setAction(this.getDismissEventName(appContext));
         i.putExtra(NOT_ID, notID);
         appContext.sendBroadcast(i);
+    }
+
+    private static String dismissEventName = null;
+    private String getDismissEventName(Context appContext) {
+        if(PushDismissedHandler.dismissEventName == null) {
+            PushDismissedHandler.dismissEventName = appContext.getPackageName() + ".push_dismissed";
+        }
+
+        return PushDismissedHandler.dismissEventName;        
     }
 }
