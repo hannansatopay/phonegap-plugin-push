@@ -69,28 +69,30 @@ public class TextSubstituteUtil {
         }
 
         try {
-            String title = getTitle(extras);
-            Log.d(TAG, "title: " + title);
-            String updatedTitle = titleParser.parse(title, extras, this.appContext);
+            String title = extras.getString(TITLE);
+            if (title == null) {
+                title = "";
+            }
+
+            String altTitle = this.getAltValue(extras, Extras_AltTitle, title);
+            if (title.equals(altTitle)) {
+                Log.d(TAG, "No alt title");
+                return;
+            }
+
+            Log.d(TAG, "altTitle: " + altTitle);
+            String updatedTitle = titleParser.parse(altTitle, extras, this.appContext);
             Log.d(TAG, "updatedTitle: " + updatedTitle);
-            setTitle(extras, updatedTitle);
+
+            extras.putString(TITLE, updatedTitle);
+            Log.d(TAG, "Title updated");
         }
         catch (Exception e) {
             Crashlytics.logException(e);
             Log.e(TAG, "Unable to update title", e);
         }
-
-        Log.d(TAG, "Title updated");
     }
 
-    private String getTitle(Bundle extras) {
-        String title = extras.getString(TITLE);
-        return this.getAltValue(extras, Extras_AltTitle, title);
-    }
-
-    private void setTitle(Bundle extras, String title) {
-        extras.putString(TITLE, title);
-    }
 
     void updateMessage(Bundle extras) {
         if (messageParser == null) {
@@ -99,27 +101,28 @@ public class TextSubstituteUtil {
         }
 
         try {
-            String message = getMessage(extras);
-            Log.d(TAG, "message: " + message);
-            String updatedMsg = messageParser.parse(message, extras, this.appContext);
+            String msg = extras.getString(MESSAGE);
+            if (msg == null) {
+                msg = "";   // avoid null exception
+            }
+
+            String altMsg = this.getAltValue(extras, Extras_AltMsg, msg);
+            if (msg.equals(altMsg)) {
+                Log.d(TAG, "No alt message");
+                return;
+            }
+
+            Log.d(TAG, "altMsg: " + altMsg);
+            String updatedMsg = messageParser.parse(altMsg, extras, this.appContext);
             Log.d(TAG, "updatedMessage: " + updatedMsg);
-            setMessage(extras, updatedMsg);
+
+            extras.putString(MESSAGE, updatedMsg);
+            Log.d(TAG, "Message updated");
         }
         catch (Exception e) {
             Crashlytics.logException(e);
             Log.e(TAG, "Unable to update message", e);
         }
-
-        Log.d(TAG, "Message updated");
-    }
-
-    private String getMessage(Bundle extras) {
-        String msg = extras.getString(MESSAGE);
-        return this.getAltValue(extras, Extras_AltMsg, msg);
-    }
-
-    private void setMessage(Bundle extras, String message) {
-        extras.putString(MESSAGE, message);
     }
 
     private String getAltValue(Bundle extras, String altPropName, String defaultValue) {
