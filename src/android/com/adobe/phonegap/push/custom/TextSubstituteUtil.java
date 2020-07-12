@@ -5,15 +5,21 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.crashlytics.android.Crashlytics;
+import com.eightbhs.core.util.GsonUtil;
+import com.eightbhs.personal_safety.BuildConfig;
+import com.google.gson.annotations.Expose;
 
 import static com.adobe.phonegap.push.PushConstants.MESSAGE;
 import static com.adobe.phonegap.push.PushConstants.TITLE;
 
 public class TextSubstituteUtil {
 
-    private static String TextParserPref = "Push_TextParser";
-    private static String Pref_TitleParserProp = "titleParser";
-    private static String Pref_MessageParserProp = "messageParser";
+    private static final String TextParserPref = "Push_TextParser";
+    private static final String Pref_TitleParserProp = "titleParser";
+    private static final String Pref_MessageParserProp = "messageParser";
+
+    private static final String Extras_AltTitle = "alt_title";
+    private static final String Extras_AltMsg = "alt_message";
 
     private static TextSubstituteUtil instance = null;
 
@@ -64,11 +70,8 @@ public class TextSubstituteUtil {
     }
 
     private String getTitle(Bundle extras) {
-        // TODO: For backward compatibility, the server will have to send static title
-        // Then at a later date, I can force an app update, when most people app have updated
-        //
-        // Interim, there can be alternative title in the extra payload which can be parsed
-        return extras.getString(TITLE);
+        String title = extras.getString(TITLE);
+        return this.getAltValue(extras, Extras_AltTitle, title);
     }
 
     private void setTitle(Bundle extras, String title) {
@@ -85,12 +88,49 @@ public class TextSubstituteUtil {
     }
 
     private String getMessage(Bundle extras) {
-        // TODO: For backward compatibility, the server will have to send static message, with alternative parsable message
-
-        return extras.getString(MESSAGE);
+        String msg = extras.getString(MESSAGE);
+        return this.getAltValue(extras, Extras_AltMsg, msg);
     }
 
     private void setMessage(Bundle extras, String message) {
         extras.putString(MESSAGE, message);
+    }
+
+    private String getAltValue(Bundle extras, String altPropName, String defaultValue) {
+        String latestValue = defaultValue;
+
+        String json = extras.getString(altPropName);
+        if (json == null) {
+            return latestValue;
+        }
+
+        AltValue[] altValues = GsonUtil.get().fromJson(json, AltValue[].class);
+        for (AltValue altTitle : altValues) {
+            if (BuildConfig.VERSION_CODE >= altTitle.version) {
+                latestValue = altTitle.value;
+            }
+        }
+
+        return latestValue;
+    }
+
+    private static class AltValue {
+        @Expose
+        String client;
+        @Expose
+        String value;
+
+        private int version = 0;
+
+        public int getVersion() {
+            if (version == 0) {
+                String[] parts = client.split(".");
+                // Expect version to be 3 parts
+                if (parts.length == 3) {
+                    version = (Integer.parseInt(parts[0]) * 10000) + (Integer.parseInt(parts[1]) * 100) + Integer.parseInt(parts[2]);
+                }
+            }
+            return version;
+        }
     }
 }
