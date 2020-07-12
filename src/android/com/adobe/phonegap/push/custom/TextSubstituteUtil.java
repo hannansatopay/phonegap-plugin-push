@@ -21,7 +21,7 @@ public class TextSubstituteUtil {
     private static final String Pref_MessageParserProp = "messageParser";
 
     private static final String Extras_AltTitle = "alt_title";
-    private static final String Extras_AltMsg = "alt_message";
+    private static final String Extras_AltBody = "alt_body";
 
     private static TextSubstituteUtil instance = null;
 
@@ -106,7 +106,7 @@ public class TextSubstituteUtil {
                 msg = "";   // avoid null exception
             }
 
-            String altMsg = this.getAltValue(extras, Extras_AltMsg, msg);
+            String altMsg = this.getAltValue(extras, Extras_AltBody, msg);
             if (msg.equals(altMsg)) {
                 Log.d(TAG, "No alt message");
                 return;
