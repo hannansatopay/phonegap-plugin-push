@@ -48,8 +48,6 @@ import java.util.List;
 import java.util.Map;
 import java.security.SecureRandom;
 
-import com.adobe.phonegap.push.NativeActionHandler;
-
 @SuppressLint("NewApi")
 public class FCMService extends FirebaseMessagingService implements PushConstants {
 
@@ -115,6 +113,9 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
       String titleKey = prefs.getString(TITLE_KEY, TITLE);
 
       extras = normalizeExtras(applicationContext, extras, messageKey, titleKey);
+
+      TextSubstituteUtil.getInstance(applicationContext).updateTitle(extras);
+      TextSubstituteUtil.getInstance(applicationContext).updateMessage(extras);
 
       if (clearBadge) {
         PushPlugin.setApplicationIconBadgeNumber(getApplicationContext(), 0);
