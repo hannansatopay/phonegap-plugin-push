@@ -65,8 +65,14 @@ public class TextSubstituteUtil {
             return;
         }
 
-        String title = getTitle(extras);
-        setTitle(extras, titleParser.parse(title, extras, this.appContext));
+        try {
+            String title = getTitle(extras);
+            String updatedTitle = titleParser.parse(title, extras, this.appContext);
+            setTitle(extras, updatedTitle);
+        }
+        catch (Exception e) {
+            Crashlytics.logException(e);
+        }
     }
 
     private String getTitle(Bundle extras) {
@@ -83,8 +89,14 @@ public class TextSubstituteUtil {
             return;
         }
 
-        String message = getMessage(extras);
-        setMessage(extras, messageParser.parse(message, extras, this.appContext));
+        try {
+            String message = getMessage(extras);
+            String updatedMsg = messageParser.parse(message, extras, this.appContext);
+            setMessage(extras, updatedMsg);
+        }
+        catch (Exception e) {
+            Crashlytics.logException(e);
+        }
     }
 
     private String getMessage(Bundle extras) {
@@ -97,21 +109,28 @@ public class TextSubstituteUtil {
     }
 
     private String getAltValue(Bundle extras, String altPropName, String defaultValue) {
-        String latestValue = defaultValue;
 
         String json = extras.getString(altPropName);
         if (json == null) {
+            return defaultValue;
+        }
+
+        try {
+            String latestValue = defaultValue;
+
+            AltValue[] altValues = GsonUtil.get().fromJson(json, AltValue[].class);
+            for (AltValue altTitle : altValues) {
+                if (BuildConfig.VERSION_CODE >= altTitle.version) {
+                    latestValue = altTitle.value;
+                }
+            }
+
             return latestValue;
         }
-
-        AltValue[] altValues = GsonUtil.get().fromJson(json, AltValue[].class);
-        for (AltValue altTitle : altValues) {
-            if (BuildConfig.VERSION_CODE >= altTitle.version) {
-                latestValue = altTitle.value;
-            }
+        catch (Exception e) {
+            Crashlytics.logException(e);
+            return defaultValue;
         }
-
-        return latestValue;
     }
 
     private static class AltValue {
