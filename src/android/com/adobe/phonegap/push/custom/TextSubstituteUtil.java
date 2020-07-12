@@ -3,6 +3,7 @@ package com.adobe.phonegap.push;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.eightbhs.core.util.GsonUtil;
@@ -13,6 +14,7 @@ import static com.adobe.phonegap.push.PushConstants.MESSAGE;
 import static com.adobe.phonegap.push.PushConstants.TITLE;
 
 public class TextSubstituteUtil {
+    private static final String TAG = "TextSubstituteUtil";
 
     private static final String TextParserPref = "Push_TextParser";
     private static final String Pref_TitleParserProp = "titleParser";
@@ -62,17 +64,23 @@ public class TextSubstituteUtil {
 
     void updateTitle(Bundle extras) {
         if (titleParser == null) {
+            Log.w(TAG, "No title parser");
             return;
         }
 
         try {
             String title = getTitle(extras);
+            Log.d(TAG, "title: " + title);
             String updatedTitle = titleParser.parse(title, extras, this.appContext);
+            Log.d(TAG, "updatedTitle: " + updatedTitle);
             setTitle(extras, updatedTitle);
         }
         catch (Exception e) {
             Crashlytics.logException(e);
+            Log.e(TAG, "Unable to update title", e);
         }
+
+        Log.d(TAG, "Title updated");
     }
 
     private String getTitle(Bundle extras) {
@@ -86,17 +94,23 @@ public class TextSubstituteUtil {
 
     void updateMessage(Bundle extras) {
         if (messageParser == null) {
+            Log.w(TAG, "No title parser");
             return;
         }
 
         try {
             String message = getMessage(extras);
+            Log.d(TAG, "message: " + message);
             String updatedMsg = messageParser.parse(message, extras, this.appContext);
+            Log.d(TAG, "updatedMessage: " + updatedMsg);
             setMessage(extras, updatedMsg);
         }
         catch (Exception e) {
             Crashlytics.logException(e);
+            Log.e(TAG, "Unable to update message", e);
         }
+
+        Log.d(TAG, "Message updated");
     }
 
     private String getMessage(Bundle extras) {
@@ -109,9 +123,9 @@ public class TextSubstituteUtil {
     }
 
     private String getAltValue(Bundle extras, String altPropName, String defaultValue) {
-
         String json = extras.getString(altPropName);
         if (json == null) {
+            Log.d(TAG, "No alt value for: " + altPropName);
             return defaultValue;
         }
 
