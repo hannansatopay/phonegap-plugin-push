@@ -50,6 +50,10 @@ public class TextSubstituteUtil {
     }
 
     private ITextSubstitute getParser(String className) {
+        if (className == null || className.equals("")) {
+            return null;
+        }
+
         try {
             return (ITextSubstitute) Class.forName(className).newInstance();
         }
