@@ -114,9 +114,6 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
 
       extras = normalizeExtras(applicationContext, extras, messageKey, titleKey);
 
-      TextSubstituteUtil.getInstance(applicationContext).updateTitle(extras);
-      TextSubstituteUtil.getInstance(applicationContext).updateMessage(extras);
-
       if (clearBadge) {
         PushPlugin.setApplicationIconBadgeNumber(getApplicationContext(), 0);
       }
